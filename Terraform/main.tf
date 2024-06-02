@@ -50,3 +50,9 @@ module "aws_rds" {
   name                = "wordpress"
   env                 = "techtest"
 }
+
+module "s3_bucket" {
+  source = "./modules/aws_s3"
+  name   = "wordpress"
+  env    = "techtest"
+}
