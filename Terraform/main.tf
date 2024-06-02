@@ -39,7 +39,7 @@ module "aws_rds" {
   engine              = "mysql"
   engine_version      = "8.0.35"
   instance_class      = "db.t3.micro"
-  db_name             = "bn-wordpress"
+  db_name             = "wordpress"
   db_username         = "admin"
   db_password         = "bntest#1234"
   allocated_storage   = 20
@@ -62,17 +62,14 @@ module "aws_ecs" {
   task_family              = "bitnami-wp-task"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 1024
-  memory                   = 1024
+  memory                   = 2048
   execution_role_arn       = "arn:aws:iam::992382580810:role/ecsTaskExecutionRole"
   task_role_arn            = "arn:aws:iam::992382580810:role/ecsTaskExecutionRole"
-  container_definitions    = jsonencode([
-    {
-      name      = "wordpress"
-      image     = "public.ecr.aws/p0g4h9b0/cg-wp-techtest:latest"
-      cpu       = 1024
-      memory    = 1024
-      essential = true
-      environment = [
+  container_name           = "wordpress"
+  container_image          = "992382580810.dkr.ecr.eu-west-1.amazonaws.com/wp-techtest:latest"
+  container_cpu            = 1024
+  container_memory         = 1024
+  container_environment = [
         {
           name = "WORDPRESS_DATABASE_USER"
           value = "admin"
@@ -86,22 +83,24 @@ module "aws_ecs" {
           value = split(":", module.aws_rds.rds_endpoint)[0]
         },
         {
-          name = "WORDPRESS_DATABASE_NAME"
-          value = "bn-wordpress"
+          name = "WORDPRESS_DATABASE_NAME",
+          value = "wordpress"
         }
       ]
-      portMappings = [
+  portMappings            = [
         {
-          containerPort = 8080
-          hostPort      = 8080
+          "name": "8080",
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
         },
         {
-          containerPort = 443
-          hostPort = 443
+          "name": "443",
+          "containerPort": 443,
+          "hostPort": 443,
+          "protocol": "tcp"
         }
-      ]
-    }
-  ])
+  ]
   service_name            = "bitnami-wp-service"
   desired_count           = 1
   subnet_ids              = module.aws_vpc.public_subnet_ids

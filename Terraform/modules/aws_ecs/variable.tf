@@ -8,9 +8,10 @@ variable "task_family" {
   type        = string
 }
 
-variable "container_definitions" {
-  description = "A list of valid container definitions provided as a single valid JSON document"
-}
+# variable "container_definitions" {
+#   description = "A list of valid container definitions provided as a single valid JSON document"
+#   type = string
+# }
 
 variable "network_mode" {
   description = "The Docker networking mode to use for the containers in the task"
@@ -75,6 +76,30 @@ variable "assign_public_ip" {
   description = "Assign a public IP address to the ECS service"
   type        = bool
   default     = true
+}
+
+variable "container_name" {
+  
+}
+
+variable "container_image" {
+  
+}
+
+variable "container_cpu" {
+  
+}
+
+variable "container_memory" {
+  
+}
+
+variable "container_environment" {
+  
+}
+
+variable "portMappings" {
+  
 }
 
 variable "name" {

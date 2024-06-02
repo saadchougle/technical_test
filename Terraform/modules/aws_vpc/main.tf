@@ -88,7 +88,7 @@ resource "aws_route_table" "private-rt" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block     = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id     = aws_internet_gateway.igw.id
     # Uncomment if you wish to attach Nat Gateway
     # nat_gateway_id = aws_nat_gateway.natgw.id
   }
@@ -97,9 +97,15 @@ resource "aws_route_table" "private-rt" {
   }
 }
 
-# Creating route Table association with private subnets
 resource "aws_route_table_association" "private-association" {
-  count          = length(var.private_subnet_cidr_block)-(local.az_count)
+  count          = local.az_count
   subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private-rt[count.index % local.az_count].id
+  route_table_id = aws_route_table.private-rt.id
 }
+
+# Creating route Table association with private subnets using Nat Gateway
+# resource "aws_route_table_association" "private-association" {
+#   count          = length(var.private_subnet_cidr_block)-(local.az_count)
+#   subnet_id      = aws_subnet.private[count.index].id
+#   route_table_id = aws_route_table.private-rt[count.index % local.az_count].id
+# }

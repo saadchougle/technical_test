@@ -1,9 +1,3 @@
-#Creating DB Subnet Group
-resource "aws_db_subnet_group" "rds_subnetgroup" {
-  name        = var.db_subnetgroup_name
-  subnet_ids  = var.db_subnet_ids
-}
-
 # Creating AWS RDS
 resource "aws_db_instance" "rds" {
   identifier             = lower("${var.db_name}-db")
