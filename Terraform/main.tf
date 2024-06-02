@@ -12,9 +12,8 @@ module "aws_vpc" {
   env                        = "techtest"
 }
 
-/*
 module "wp_sg" {
-  source             = "./modules/security_groups"
+  source             = "./modules/aws_sg"
   vpc_id             = module.aws_vpc.vpc_id
   sg_name            = "wp-sg"
   protocol           = "tcp"
@@ -23,14 +22,14 @@ module "wp_sg" {
   name               = "wordpress"
   env                = "techtest"
 }
-*/
+
 module "rds_sg" {
   source             = "./modules/aws_sg"
   vpc_id             = module.aws_vpc.vpc_id
   sg_name            = "rds-sg"
   protocol           = "tcp"
   inbound_ip_sources = []
-  inbound_sg_sources = [/*{"from":3306, "to":3306, "source":module.wp_sg.sg_id}*/]
+  inbound_sg_sources = [{"from":3306, "to":3306, "source":module.wp_sg.security_group_id}]
   name               = "wordpress"
   env                = "techtest"
 }
@@ -55,4 +54,58 @@ module "s3_bucket" {
   source = "./modules/aws_s3"
   name   = "wordpress"
   env    = "techtest"
+}
+
+module "aws_ecs" {
+  source                   = "./modules/aws_ecs"
+  cluster_name             = "bitnami-wp-cluster"
+  task_family              = "bitnami-wp-task"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = 1024
+  memory                   = 1024
+  execution_role_arn       = "arn:aws:iam::992382580810:role/ecsTaskExecutionRole"
+  task_role_arn            = "arn:aws:iam::992382580810:role/ecsTaskExecutionRole"
+  container_definitions    = jsonencode([
+    {
+      name      = "wordpress"
+      image     = "public.ecr.aws/p0g4h9b0/cg-wp-techtest:latest"
+      cpu       = 1024
+      memory    = 1024
+      essential = true
+      environment = [
+        {
+          name = "WORDPRESS_DATABASE_USER"
+          value = "admin"
+        },
+        {
+          name = "WORDPRESS_DATABASE_PASSWORD"
+          value = "bntest#1234"
+        },
+        {
+          name = "WORDPRESS_DATABASE_HOST"
+          value = split(":", module.aws_rds.rds_endpoint)[0]
+        },
+        {
+          name = "WORDPRESS_DATABASE_NAME"
+          value = "bn-wordpress"
+        }
+      ]
+      portMappings = [
+        {
+          containerPort = 8080
+          hostPort      = 8080
+        },
+        {
+          containerPort = 443
+          hostPort = 443
+        }
+      ]
+    }
+  ])
+  service_name            = "bitnami-wp-service"
+  desired_count           = 1
+  subnet_ids              = module.aws_vpc.public_subnet_ids
+  security_group_ids      = [module.wp_sg.security_group_id]
+  name                    = "wordpress"
+  env                     = "techtest"
 }
