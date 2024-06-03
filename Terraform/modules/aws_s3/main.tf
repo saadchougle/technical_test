@@ -1,11 +1,11 @@
 #Create S3 
-resource "aws_s3_bucket" "bucket" {
-  bucket = "${var.name}-${var.env}-media-bucket-1" 
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "${var.name}-${var.env}-media-bucket-1"
 }
 
 # This is required by Wordpress offload plugin
 resource "aws_s3_bucket_public_access_block" "media_bucket_public_access" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.my_bucket.id
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
