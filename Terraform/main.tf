@@ -17,7 +17,7 @@ module "wp_sg" {
   vpc_id             = module.aws_vpc.vpc_id
   sg_name            = "wp-sg"
   protocol           = "tcp"
-  inbound_ip_sources = [{"from":8080, "to":8080, "source":"0.0.0.0/0"}, {"from":443, "to":443, "source":"0.0.0.0/0"}]
+  inbound_ip_sources = [{"from":80, "to":80, "source":"0.0.0.0/0"}, {"from":8080, "to":8080, "source":"0.0.0.0/0"}]
   inbound_sg_sources = []
   name               = "wordpress"
   env                = "techtest"
@@ -95,9 +95,9 @@ module "aws_ecs" {
           "protocol": "tcp"
         },
         {
-          "name": "443",
-          "containerPort": 443,
-          "hostPort": 443,
+          "name": "80",
+          "containerPort": 80,
+          "hostPort": 80,
           "protocol": "tcp"
         }
   ]
