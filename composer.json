@@ -1,0 +1,12 @@
+{
+    "name": "root/wordpress",
+    "type": "wordpress-plugin",
+    "require": {
+    	"deliciousbrains/wp-amazon-s3-and-cloudfront": "^3.2"
+    },
+    "config": {
+    	"allow-plugins": {
+	    "composer/installers": true
+	}
+    }
+}
