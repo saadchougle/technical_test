@@ -5,8 +5,14 @@ FROM bitnami/wordpress:latest
 USER root
 RUN apt-get update && apt-get install -y curl
 
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Switch back to the non-root user provided by the Bitnami WordPress image
 USER 1001
+
+# Verify Composer installation
+RUN composer
 
 #Setting up the Working Directory
 WORKDIR /opt/bitnami/wordpress
